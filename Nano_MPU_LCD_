@@ -1,0 +1,48 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <MPU6050.h>
+
+// Create an LCD object. The address 0x27 is the typical address for LCDs with I2C module
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Create an MPU6050 object
+MPU6050 mpu;
+
+void setup() {
+  Wire.begin();
+  lcd.begin(16, 2);  // Initialize the LCD with 16 columns and 2 rows
+  lcd.backlight();
+  
+  // Initialize the MPU6050
+  mpu.initialize();
+  if (!mpu.testConnection()) {
+    lcd.print("MPU6050 fail");
+    while (1);
+  }
+  lcd.clear();
+}
+
+void loop() {
+  // Variables to store accelerometer and gyroscope data
+  int16_t ax, ay, az;
+  int16_t gx, gy, gz;
+  
+  // Read accelerometer and gyroscope values
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+  // Display accelerometer values on the LCD
+  lcd.setCursor(0, 0);
+  lcd.print("A:");
+  lcd.print(ax); lcd.print(",");
+  lcd.print(ay); lcd.print(",");
+  lcd.print(az);
+
+  // Display gyroscope values on the LCD
+  lcd.setCursor(0, 1);
+  lcd.print("G:");
+  lcd.print(gx); lcd.print(",");
+  lcd.print(gy); lcd.print(",");
+  lcd.print(gz);
+
+  delay(500);
+}
